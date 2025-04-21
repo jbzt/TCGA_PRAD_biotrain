@@ -47,4 +47,4 @@ The following files are provided:
 These prepared files are ready to be used in downstream machine learning analyses.
 
 ## how this data was created?
-You can visit [this page](https://rpubs.com/jbzt/914994) to learn more about how this dataset was downloaded and processed.
+You can visit [this page](https://rpubs.com/jbzt/914994) to learn more about how this dataset was downloaded and processed (draft in spanish)
