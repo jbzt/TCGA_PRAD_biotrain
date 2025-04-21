@@ -1,0 +1,203 @@
+---
+title: Exploratory and Unsupervised Analysis of TCGA Prostate Cancer Transcriptomic
+  Data
+author: "Juan Bizzotto"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+In this notebook, we explore the transcriptomic and clinical data from the TCGA Prostate Adenocarcinoma (PRAD) cohort. The goal is to perform **data exploration** and apply **unsupervised machine learning methods** such as **hierarchical clustering**, **k-means**, and **dimensionality reduction** techniques (PCA and t-SNE).
+
+We use three datasets located in the `data/` folder:
+
+- `feno.RDS`: Clinical and phenotypic data.
+- `exp.RDS`: Complete gene expression matrix (RNA-Seq).
+- `exp_top.RDS`: A subset of the expression matrix including the top most variable genes, useful for clustering and visualization.
+
+---
+
+## Load Required Packages
+
+```{r packages}
+library(ggplot2)
+library(tidyverse)
+library(pheatmap)
+library(broom)
+library(skimr)
+library(gtsummary)
+library(ggfortify)
+library(Rtsne)
+```
+
+---
+
+## Load Data
+
+```{r load-data}
+feno <- readRDS("data/feno.RDS")
+exp <- readRDS("data/exp.RDS")
+exp_top <- readRDS("data/exp_top.RDS")
+```
+
+---
+
+## Initial Data Inspection
+
+```{r inspect}
+dim(exp)
+dim(exp_top)
+```
+
+We can also take a glimpse of the data structures:
+
+```{r glimpse}
+glimpse(feno)
+```
+
+---
+
+## Preprocessing
+
+We will:
+
+1. Transpose the expression matrix to have genes as columns.
+2. Remove genes that have zero expression across all samples.
+3. Filter to include only primary tumor samples.
+4. Synchronize sample IDs across datasets.
+5. Recode the ISUP group as an ordered factor.
+
+```{r preprocess}
+exp <- t(exp)
+exp <- exp[, colSums(exp != 0) > 0]
+
+# Keep only primary tumor samples
+feno <- feno %>% filter(sample_type == "Primary Tumor")
+exp <- exp[rownames(feno), ]
+exp_top <- exp_top[rownames(feno), ]
+
+# Set ISUP group as ordered factor
+feno$ISUP_group <- factor(feno$ISUP_group, ordered = TRUE)
+feno <- droplevels(feno)
+
+# Add numeric version of ISUP group
+feno$ISUP_group_num <- as.numeric(feno$ISUP_group)
+```
+
+---
+
+## Clinical Summary Table
+
+We summarize the clinical characteristics using `gtsummary`.
+
+```{r summary-table}
+feno %>%
+  tbl_summary(
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits = all_continuous() ~ 2
+  )
+```
+
+---
+
+## Unsupervised Clustering
+
+### Hierarchical Clustering with Heatmap
+
+We use the top variable genes (`exp_top`) to reduce dimensionality for visualization.
+
+```{r heatmap-basic}
+pheatmap(t(exp_top), show_rownames = FALSE, show_colnames = FALSE, scale = "row")
+```
+
+Now we add clinical annotations to the heatmap.
+
+```{r heatmap-annotated}
+annotations <- data.frame(feno %>% 
+                            select(ISUP_group,
+                                   ISUP_group_num,
+                                   histological_type, 
+                                   clinical_T_simple, 
+                                   pathologic_T_simple, 
+                                   initial_pathologic_diagnosis_method))
+
+pheatmap(t(exp_top),
+         scale = "row",
+         annotation = annotations,
+         show_rownames = FALSE, 
+         show_colnames = FALSE)
+```
+
+---
+
+## Principal Component Analysis (PCA)
+
+We apply PCA on the full expression matrix and visualize the principal components.
+
+```{r pca-basic}
+exp <- exp[, colSums(exp != 0) > 0]
+pca <- prcomp(exp, scale. = TRUE)
+autoplot(pca)
+```
+
+We can also color the PCA plot by clinical covariates:
+
+```{r pca-colored}
+autoplot(pca, data = feno, colour = "ISUP_group")
+autoplot(pca, data = feno, colour = "age")
+```
+
+---
+
+## K-Means Clustering
+
+We apply k-means clustering using 5 clusters on the `exp_top` matrix.
+
+```{r kmeans}
+set.seed(123)
+km <- kmeans(exp_top, centers = 5, nstart = 25)
+feno$cluster_kmeans <- factor(km$cluster)
+
+# Visualize clusters in PCA space
+autoplot(pca, data = feno, colour = "cluster_kmeans")
+```
+
+---
+
+## Dimensionality Reduction with t-SNE
+
+We use t-SNE to project samples into two dimensions and visualize the separation between clusters and clinical groups.
+
+```{r tsne}
+set.seed(123)
+tsne <- Rtsne(exp_top, perplexity = 30)
+```
+
+```{r tsne-plot}
+plot(tsne$Y, col = km$cluster, pch = 19, main = "t-SNE + K-means Clusters")
+plot(tsne$Y, col = feno$ISUP_group, pch = 19, main = "t-SNE Colored by ISUP Group")
+```
+
+---
+
+## Clinical Association Example
+
+Finally, we test whether the identified clusters differ in clinical features. Here, we compare PSA levels across k-means clusters.
+
+```{r psa-boxplot}
+boxplot(feno$PSA ~ feno$cluster_kmeans,
+        xlab = "K-means Cluster",
+        ylab = "Preoperative PSA",
+        main = "PSA Levels by Cluster")
+```
+
+
