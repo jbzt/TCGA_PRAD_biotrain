@@ -26,3 +26,22 @@ The dataset includes several clinically relevant variables that are critical for
 - **Initial Pathologic Diagnosis Method**: Refers to the diagnostic technique used (e.g., needle biopsy, TURP, prostatectomy) for confirming prostate cancer.
 
 Together, these variables and transcriptomic features allow the development of machine learning models to predict outcomes and inform clinical decision-making in prostate cancer management.
+
+
+## About the Data
+
+The transcriptomic and clinical data used in this project are available in the [`/data`](./data) folder of this repository.
+
+As the focus of this module is on clustering and classification methods, we will work directly with a preprocessed version of the dataset. The data have already been downloaded, curated, and cleaned. This includes:
+
+- Quality control and removal of outliers
+- Consistent formatting of clinical variables (e.g., conversion to factors where appropriate)
+- Selection of high-variance genes for dimensionality reduction
+
+The following files are provided:
+
+- **`feno.RDS`**: Contains all available clinical and phenotypic information for each patient in the dataset.
+- **`exp.RDS`**: Gene expression matrix (RNA-Seq data) for all genes and all patients in the TCGA prostate cancer cohort.
+- **`exp_top.RDS`**: A subset of the expression matrix, including only the top most variable genes across patients. This reduced dataset is useful for analyses that require fewer features, such as clustering or classification with limited computational resources.
+
+These prepared files are ready to be used in downstream machine learning analyses.
