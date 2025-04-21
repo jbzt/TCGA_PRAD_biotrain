@@ -48,3 +48,7 @@ These prepared files are ready to be used in downstream machine learning analyse
 
 ## how this data was created?
 You can visit [this page](https://rpubs.com/jbzt/914994) to learn more about how this dataset was downloaded and processed (draft in spanish)
+
+
+# first draft 
+first analyses [here](https://jbzt.github.io/TCGA_PRAD_biotrain/resumen_1.nb.html)
