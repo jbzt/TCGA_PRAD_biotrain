@@ -45,3 +45,6 @@ The following files are provided:
 - **`exp_top.RDS`**: A subset of the expression matrix, including only the top most variable genes across patients. This reduced dataset is useful for analyses that require fewer features, such as clustering or classification with limited computational resources.
 
 These prepared files are ready to be used in downstream machine learning analyses.
+
+## how this data was created?
+You can visit [this page](https://rpubs.com/jbzt/914994) to learn more about how this dataset was downloaded and processed.
