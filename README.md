@@ -1,7 +1,7 @@
 # Draft 1: Prostate cancer transcriptomic data for biotrain
 
 ## titulo 2
-el amor despues del *amor* se parece a ese lado del **sol** esta cancion se escucha [aca](www.youtube.com)
+el amor despues del *amor* se parece a ese lado del **sol** esta cancion se escucha [aca](https://www.youtube.com)
 
 ### titulo 3
 
