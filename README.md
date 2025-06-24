@@ -1,14 +1,5 @@
 # Draft 1: Prostate cancer transcriptomic data for biotrain
 
-## titulo 2
-el amor despues del *amor* se parece a ese lado del **sol** esta cancion se escucha [aca](https://www.youtube.com)
-
-![fito](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoU--hFik3DB1SjXkATOF37-xKbwCibIAlpgBye1EYWQz0WmevRiXLuUEZgFwHzq3WQ9vdbWddwejmr-FhCc4oZg)
-
-### titulo 3
-
-# otro titulo
-
 # Introduction to Prostate Cancer and TCGA Transcriptomic Data
 
 Prostate cancer (PCa) is the most commonly diagnosed non-cutaneous malignancy and the second leading cause of cancer-related death among men in many parts of the world. It is a biologically heterogeneous disease, ranging from indolent tumors that may not require treatment to aggressive forms with a high risk of metastasis and mortality. Understanding the molecular landscape of prostate cancer is critical for improving diagnosis, risk stratification, and treatment strategies.
